@@ -1,7 +1,10 @@
 import 'package:awesome_notes_firebase/core/constants.dart';
+import 'package:awesome_notes_firebase/pages/new_or_edit_note_page.dart';
 import 'package:awesome_notes_firebase/widgets/note_card.dart';
 import 'package:awesome_notes_firebase/widgets/note_fab.dart';
 import 'package:awesome_notes_firebase/widgets/note_grid.dart';
+import 'package:awesome_notes_firebase/widgets/note_icon_button.dart';
+import 'package:awesome_notes_firebase/widgets/note_icon_button_outlined.dart';
 import 'package:awesome_notes_firebase/widgets/note_list.dart';
 import 'package:awesome_notes_firebase/widgets/search_field.dart';
 import 'package:flutter/material.dart';
@@ -28,21 +31,20 @@ class _MainPageState extends State<MainPage> {
       appBar: AppBar(
         title: const Text("Awesome Notes 📒"),
         actions: [
-          IconButton(
+          NoteIconButtonOutlined(
+            icon: FontAwesomeIcons.rightFromBracket,
             onPressed: () {},
-            icon: FaIcon(FontAwesomeIcons.rightFromBracket),
-            style: IconButton.styleFrom(
-              backgroundColor: primary,
-              foregroundColor: white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-                side: BorderSide(color: black),
-              ),
-            ),
           ),
         ],
       ),
-      floatingActionButton: NoteFab(),
+      floatingActionButton: NoteFab(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => NewOrEditNotePage(isNewNote: true,)),
+          );
+        },
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -52,25 +54,16 @@ class _MainPageState extends State<MainPage> {
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: Row(
                 children: [
-                  IconButton(
+                  NoteIconButton(
+                    icon: isDescending
+                        ? FontAwesomeIcons.arrowDown
+                        : FontAwesomeIcons.arrowUp,
+                    size: 18,
                     onPressed: () {
                       setState(() {
                         isDescending = !isDescending;
                       });
                     },
-                    icon: FaIcon(
-                      isDescending
-                          ? FontAwesomeIcons.arrowDown
-                          : FontAwesomeIcons.arrowUp,
-                    ),
-                    padding: EdgeInsets.zero,
-                    visualDensity: VisualDensity.compact,
-                    constraints: BoxConstraints(),
-                    style: IconButton.styleFrom(
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    ),
-                    iconSize: 18,
-                    color: gray700,
                   ),
                   SizedBox(width: 16),
                   DropdownButton(
@@ -111,25 +104,16 @@ class _MainPageState extends State<MainPage> {
                     },
                   ),
                   Spacer(),
-                  IconButton(
+                  NoteIconButton(
+                    icon: isGrid
+                          ? FontAwesomeIcons.tableCellsLarge
+                          : FontAwesomeIcons.bars,
+                    size: 18,
                     onPressed: () {
                       setState(() {
                         isGrid = !isGrid;
                       });
                     },
-                    icon: FaIcon(
-                      isGrid
-                          ? FontAwesomeIcons.tableCellsLarge
-                          : FontAwesomeIcons.bars,
-                    ),
-                    padding: EdgeInsets.zero,
-                    visualDensity: VisualDensity.compact,
-                    constraints: BoxConstraints(),
-                    style: IconButton.styleFrom(
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    ),
-                    iconSize: 18,
-                    color: gray700,
                   ),
                 ],
               ),
