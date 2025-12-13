@@ -89,6 +89,7 @@ class _NewOrEditNotePageState extends State<NewOrEditNotePage> {
                 hintStyle: TextStyle(color: gray300),
                 border: InputBorder.none,
               ),
+              canRequestFocus: !readOnly,
             ),
             if (!widget.isNewNote) ...[
               const Row(

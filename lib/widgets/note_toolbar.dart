@@ -5,8 +5,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class NoteToolbar extends StatelessWidget {
   const NoteToolbar({
-    super.key,
     required this.quillController,
+    super.key,
   });
 
   final QuillController quillController;
