@@ -11,6 +11,7 @@ dependencies:
     sdk: flutter
   flutter_quill: ^11.5.0
   font_awesome_flutter: ^10.12.0
+  provider: ^6.1.5+1
 
 dev_dependencies:
   flutter_test:
@@ -19,6 +20,8 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/images/person.png
   fonts:
     - family: Poppins
       fonts:
