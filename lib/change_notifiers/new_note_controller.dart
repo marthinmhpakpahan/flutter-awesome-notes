@@ -34,5 +34,10 @@ class NewNoteController extends ChangeNotifier {
     notifyListeners();
   }
 
-  List<String> get tags => _tags;
+  List<String> get tags => [..._tags];
+
+  void removeTag(int index) {
+    _tags.removeAt(index);
+    notifyListeners();
+  }
 }

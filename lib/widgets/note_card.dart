@@ -1,6 +1,7 @@
 import 'package:awesome_notes_firebase/core/constants.dart';
 import 'package:awesome_notes_firebase/models/note.dart';
 import 'package:awesome_notes_firebase/pages/new_or_edit_note_page.dart';
+import 'package:awesome_notes_firebase/widgets/note_tag.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -54,18 +55,7 @@ class NoteCard extends StatelessWidget {
               child: Row(
                 children: List.generate(
                   3,
-                  (index) => Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16),
-                      color: gray100,
-                    ),
-                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 2),
-                    margin: EdgeInsets.only(right: 4),
-                    child: Text(
-                      "first chip",
-                      style: TextStyle(fontSize: 12, color: gray700),
-                    ),
-                  ),
+                  (index) => NoteTag(label: 'New Tag',),
                 ),
               ),
             ),

@@ -4,6 +4,7 @@ import 'package:awesome_notes_firebase/widgets/dialog_card.dart';
 import 'package:awesome_notes_firebase/widgets/new_tag_dialog.dart';
 import 'package:awesome_notes_firebase/widgets/note_icon_button.dart';
 import 'package:awesome_notes_firebase/widgets/note_icon_button_outlined.dart';
+import 'package:awesome_notes_firebase/widgets/note_tag.dart';
 import 'package:awesome_notes_firebase/widgets/note_toolbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart';
@@ -180,7 +181,9 @@ class _NewOrEditNotePageState extends State<NewOrEditNotePage> {
                             context: context,
                             builder: (context) => DialogCard(child: NewTagDialog(),),
                           );
-                          print('tag is: $tag');
+                          if(tag != null) {
+                            newNoteController.addTag(tag);
+                          }
                         },
                       ),
                     ],
@@ -188,11 +191,21 @@ class _NewOrEditNotePageState extends State<NewOrEditNotePage> {
                 ),
                 Expanded(
                   flex: 5,
-                  child: Text(
-                    "No tags added",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: gray900,
+                  child: Selector<NewNoteController, List<String>>(
+                    selector: (_, newNoteController) => newNoteController.tags,
+                    builder: (_, tags, __) => tags.isEmpty ? Text(
+                      "No tags added",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: gray900,
+                      ),
+                    ) : SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: List.generate(tags.length, (index) => NoteTag(label: tags[index], onClosed: () {
+                          newNoteController.removeTag(index);
+                        })),
+                      ),
                     ),
                   ),
                 ),

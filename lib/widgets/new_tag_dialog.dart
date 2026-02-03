@@ -50,6 +50,7 @@ class _NewTagDialogState extends State<NewTagDialog> {
         ),
         SizedBox(height: 24),
         TextFormField(
+          autofocus: true,
           key: tagKey,
           controller: tagController,
           decoration: InputDecoration(
@@ -75,6 +76,22 @@ class _NewTagDialogState extends State<NewTagDialog> {
                 color: primary,
               ),
             ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(
+                12,
+              ),
+              borderSide: BorderSide(
+                color: Colors.red,
+              ),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(
+                12,
+              ),
+              borderSide: BorderSide(
+                color: Colors.red,
+              ),
+            ),
           ),
           validator: (value) {
             if(value!.trim().isEmpty) {
@@ -83,6 +100,9 @@ class _NewTagDialogState extends State<NewTagDialog> {
               return "Tags should not be more than 16 characters";
             }
             return null;
+          },
+          onChanged: (newValue) {
+            tagKey.currentState?.validate();
           },
         ),
         SizedBox(height: 24),
