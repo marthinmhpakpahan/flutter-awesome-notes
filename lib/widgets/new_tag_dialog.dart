@@ -1,4 +1,5 @@
 import 'package:awesome_notes_firebase/core/constants.dart';
+import 'package:awesome_notes_firebase/widgets/note_button.dart';
 import 'package:flutter/material.dart';
 
 class NewTagDialog extends StatefulWidget {
@@ -118,25 +119,11 @@ class _NewTagDialogState extends State<NewTagDialog> {
               8,
             ),
           ),
-          child: ElevatedButton(
-            onPressed: () {
-              if(tagKey.currentState?.validate() ?? false) {
-                Navigator.pop(context, tagController.text.trim());
-              }
-            },
-            child: Text("Add"),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: primary,
-              foregroundColor: white,
-              side: BorderSide(color: black),
-              shape: RoundedRectangleBorder(
-                borderRadius:
-                    BorderRadius.circular(8),
-              ),
-              elevation: 0,
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap
-            ),
-          ),
+          child: NoteButton(label: "Add", onPressed: () {
+            if(tagKey.currentState?.validate() ?? false) {
+              Navigator.pop(context, tagController.text.trim());
+            }
+          }),
         ),
       ],
     );

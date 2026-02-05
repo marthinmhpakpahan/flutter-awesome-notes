@@ -4,7 +4,6 @@ import 'package:awesome_notes_firebase/core/constants.dart';
 import 'package:awesome_notes_firebase/models/note.dart';
 import 'package:awesome_notes_firebase/pages/new_or_edit_note_page.dart';
 import 'package:awesome_notes_firebase/widgets/no_notes.dart';
-import 'package:awesome_notes_firebase/widgets/note_card.dart';
 import 'package:awesome_notes_firebase/widgets/note_fab.dart';
 import 'package:awesome_notes_firebase/widgets/note_grid.dart';
 import 'package:awesome_notes_firebase/widgets/note_icon_button.dart';

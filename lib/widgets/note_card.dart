@@ -4,6 +4,7 @@ import 'package:awesome_notes_firebase/pages/new_or_edit_note_page.dart';
 import 'package:awesome_notes_firebase/widgets/note_tag.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:intl/intl.dart';
 
 class NoteCard extends StatelessWidget {
   const NoteCard({required this.note, required this.isInGrid, super.key});
@@ -39,52 +40,61 @@ class NoteCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'This is going to be title!',
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-                color: gray900,
-              ),
-            ),
-            SizedBox(height: 4),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: List.generate(
-                  3,
-                  (index) => NoteTag(label: 'New Tag',),
+            if (note.title != null) ...[
+              Text(
+                note.title!,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  color: gray900,
                 ),
               ),
-            ),
-            SizedBox(height: 4),
-            if (isInGrid)
-              Expanded(
-                child: Text("Some content", style: TextStyle(color: gray700)),
-              )
-            else
-              Text(
-                "Some content",
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(color: gray700),
-              ),
-            Row(
-              children: [
-                Text(
-                  "29 Nov, 2025",
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: gray500,
+              SizedBox(height: 4),
+            ],
+            if (note.tags.isNotEmpty) ...[
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: List.generate(
+                    note.tags.length,
+                    (index) => NoteTag(label: note.tags[index]),
                   ),
                 ),
-                Spacer(),
-                FaIcon(FontAwesomeIcons.trash, color: gray500, size: 16),
-              ],
-            ),
+              ),
+              SizedBox(height: 4),
+            ],
+            if (note.content != null) ...[
+              if (isInGrid)
+                Expanded(
+                  child: Text(note.content!, style: TextStyle(color: gray700)),
+                )
+              else
+                Text(
+                  note.content!,
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(color: gray700),
+                ),
+              if (isInGrid) const Spacer(),
+              Row(
+                children: [
+                  Text(
+                    DateFormat("dd MMM, y").format(
+                      DateTime.fromMicrosecondsSinceEpoch(note.dateCreated),
+                    ),
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: gray500,
+                    ),
+                  ),
+                  Spacer(),
+                  FaIcon(FontAwesomeIcons.trash, color: gray500, size: 16),
+                ],
+              ),
+            ],
           ],
         ),
       ),

@@ -1,9 +1,12 @@
 import 'package:awesome_notes_firebase/change_notifiers/new_note_controller.dart';
 import 'package:awesome_notes_firebase/core/constants.dart';
+import 'package:awesome_notes_firebase/widgets/confirmation_dialog.dart';
 import 'package:awesome_notes_firebase/widgets/dialog_card.dart';
 import 'package:awesome_notes_firebase/widgets/new_tag_dialog.dart';
+import 'package:awesome_notes_firebase/widgets/note_button.dart';
 import 'package:awesome_notes_firebase/widgets/note_icon_button.dart';
 import 'package:awesome_notes_firebase/widgets/note_icon_button_outlined.dart';
+import 'package:awesome_notes_firebase/widgets/note_metadata.dart';
 import 'package:awesome_notes_firebase/widgets/note_tag.dart';
 import 'package:awesome_notes_firebase/widgets/note_toolbar.dart';
 import 'package:flutter/material.dart';
@@ -56,189 +59,128 @@ class _NewOrEditNotePageState extends State<NewOrEditNotePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: NoteIconButtonOutlined(
-            icon: FontAwesomeIcons.chevronLeft,
-            onPressed: () {
-              Navigator.maybePop(context);
-            },
-          ),
-        ),
-        title: Text(widget.isNewNote ? "New Note" : "Edit Note"),
-        actions: [
-          Selector<NewNoteController, bool>(
-            selector: (context, newNoteController) =>
-                newNoteController.readOnly,
-            builder: (context, readOnly, child) => NoteIconButtonOutlined(
-              icon: readOnly ? FontAwesomeIcons.pen : FontAwesomeIcons.bookOpen,
-              onPressed: () {
-                newNoteController.readOnly = !readOnly;
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) async {
+        if (didPop) return;
 
-                if (readOnly) {
-                  FocusScope.of(context).unfocus();
-                } else {
-                  focusNode.requestFocus();
-                }
+        if (!newNoteController.canSaveNote) {
+          Navigator.pop(context);
+          return;
+        }
+
+        final bool? shouldSave = await showDialog(
+          context: context,
+          builder: (_) => DialogCard(
+            child: ConfirmationDialog(),
+          ),
+        );
+        
+        if (shouldSave == null) return;
+
+        if (!context.mounted) return;
+
+        if (shouldSave) {
+          newNoteController.saveNote(context);
+        }
+
+        Navigator.pop(context);
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          leading: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: NoteIconButtonOutlined(
+              icon: FontAwesomeIcons.chevronLeft,
+              onPressed: () {
+                Navigator.maybePop(context);
               },
             ),
           ),
-          NoteIconButtonOutlined(
-            icon: FontAwesomeIcons.check,
-            onPressed: () {},
-          ),
-        ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
+          title: Text(widget.isNewNote ? "New Note" : "Edit Note"),
+          actions: [
             Selector<NewNoteController, bool>(
-              selector: (context, controller) => controller.readOnly,
-              builder: (context, readOnly, child) => TextField(
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                decoration: InputDecoration(
-                  hintText: "Title here",
-                  hintStyle: TextStyle(color: gray300),
-                  border: InputBorder.none,
-                ),
-                canRequestFocus: !readOnly,
-                onChanged: (value) {
-                  newNoteController.title = value;
+              selector: (context, newNoteController) =>
+                  newNoteController.readOnly,
+              builder: (context, readOnly, child) => NoteIconButtonOutlined(
+                icon: readOnly
+                    ? FontAwesomeIcons.pen
+                    : FontAwesomeIcons.bookOpen,
+                onPressed: () {
+                  newNoteController.readOnly = !readOnly;
+
+                  if (readOnly) {
+                    FocusScope.of(context).unfocus();
+                  } else {
+                    focusNode.requestFocus();
+                  }
                 },
               ),
             ),
-            if (!widget.isNewNote) ...[
-              const Row(
-                children: [
-                  Expanded(
-                    flex: 3,
-                    child: Text(
-                      "Last Modified",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: gray500,
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    flex: 5,
-                    child: Text(
-                      "07 December 2023, 03:35 PM",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: gray900,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const Row(
-                children: [
-                  Expanded(
-                    flex: 3,
-                    child: Text(
-                      "Created",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: gray500,
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    flex: 5,
-                    child: Text(
-                      "06 December 2023, 03:35 PM",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: gray900,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-            Row(
-              children: [
-                Expanded(
-                  flex: 3,
-                  child: Row(
-                    children: [
-                      Text(
-                        "Tags",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: gray500,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      NoteIconButton(
-                        icon: FontAwesomeIcons.circlePlus,
-                        onPressed: () async {
-                          final String? tag = await showDialog<String>(
-                            context: context,
-                            builder: (context) => DialogCard(child: NewTagDialog(),),
-                          );
-                          if(tag != null) {
-                            newNoteController.addTag(tag);
-                          }
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  flex: 5,
-                  child: Selector<NewNoteController, List<String>>(
-                    selector: (_, newNoteController) => newNoteController.tags,
-                    builder: (_, tags, __) => tags.isEmpty ? Text(
-                      "No tags added",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: gray900,
-                      ),
-                    ) : SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: List.generate(tags.length, (index) => NoteTag(label: tags[index], onClosed: () {
-                          newNoteController.removeTag(index);
-                        })),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Divider(color: gray500, thickness: 2),
-            ),
-            Expanded(
-              child: Selector<NewNoteController, bool>(
-                selector: (_, controller) => controller.readOnly,
-                builder: (_, readOnly, _) => Column(
-                  children: [
-                    Expanded(
-                      child: QuillEditor.basic(
-                        controller: quillController,
-                        config: const QuillEditorConfig(
-                          placeholder: "Note here...",
-                          expands: true,
-                        ),
-                        focusNode: focusNode,
-                      ),
-                    ),
-                    if (!readOnly)
-                      NoteToolbar(quillController: quillController),
-                  ],
-                ),
+            Selector<NewNoteController, bool>(
+              selector: (_, newNoteController) => newNoteController.canSaveNote,
+              builder: (_, canSaveNote, __) => NoteIconButtonOutlined(
+                icon: FontAwesomeIcons.check,
+                onPressed: canSaveNote
+                    ? () {
+                        newNoteController.saveNote(context);
+                        Navigator.pop(context);
+                      }
+                    : null,
               ),
             ),
           ],
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              Selector<NewNoteController, bool>(
+                selector: (context, controller) => controller.readOnly,
+                builder: (context, readOnly, child) => TextField(
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  decoration: InputDecoration(
+                    hintText: "Title here",
+                    hintStyle: TextStyle(color: gray300),
+                    border: InputBorder.none,
+                  ),
+                  canRequestFocus: !readOnly,
+                  onChanged: (value) {
+                    newNoteController.title = value;
+                  },
+                ),
+              ),
+              NoteMetadata(isNewNote: widget.isNewNote),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Divider(color: gray500, thickness: 2),
+              ),
+              Expanded(
+                child: Selector<NewNoteController, bool>(
+                  selector: (_, controller) => controller.readOnly,
+                  builder: (_, readOnly, _) => Column(
+                    children: [
+                      Expanded(
+                        child: QuillEditor.basic(
+                          controller: quillController,
+                          config: const QuillEditorConfig(
+                            placeholder: "Note here...",
+                            expands: true,
+                          ),
+                          focusNode: focusNode,
+                        ),
+                      ),
+                      if (!readOnly)
+                        NoteToolbar(quillController: quillController),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
+

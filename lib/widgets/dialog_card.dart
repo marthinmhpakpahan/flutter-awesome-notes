@@ -1,5 +1,4 @@
 import 'package:awesome_notes_firebase/core/constants.dart';
-import 'package:awesome_notes_firebase/widgets/new_tag_dialog.dart';
 import 'package:flutter/material.dart';
 
 class DialogCard extends StatelessWidget {
